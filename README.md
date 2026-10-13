@@ -83,7 +83,7 @@ python app.py
 | ---- | ------------- | ---- |
 | GET  | `/`           | 首页 |
 | GET  | `/api/spots`  | 词典内全部景点名称 |
-| POST | `/api/intro`  | 入参 `{"name": "故宫"}`，返回中英文展示内容 `zh` / `en` 与朗读稿 `narrate.zh` / `narrate.en` |
+| POST | `/api/intro`  | 入参 `{"name": "开平立园"}`，返回中英文展示内容 `zh` / `en` 与朗读稿 `narrate.zh` / `narrate.en` |
 | POST | `/api/tts`    | 入参 `{"text": "...", "lang": "en", "speed": 1.0, "sid": 0}`，返回 WAV 音频（`lang` 取 `en` / `zh`） |
 | POST | `/api/asr`    | 请求体为 WAV 字节，返回 `{"text": "..."}` |
 | GET  | `/api/health` | 词典与各模型状态 |

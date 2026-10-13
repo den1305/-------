@@ -3,7 +3,7 @@
 接口：
     GET  /             首页
     GET  /api/spots    词典中的全部景点名称
-    POST /api/intro    入参 {"name": "故宫"}，返回中英文介绍内容与朗读稿
+    POST /api/intro    入参 {"name": "开平立园"}，返回中英文介绍内容与朗读稿
     POST /api/tts      入参 {"text": ..., "lang": "en"/"zh", "speed": ..., "sid": ...}，返回 WAV 音频
     POST /api/asr      请求体为 WAV 字节，返回识别文本
     GET  /api/health   模型与词典状态
