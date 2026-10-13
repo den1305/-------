@@ -13,6 +13,7 @@
       "narrate": "自力村，位于广东省开平市塘口镇，是世界文化遗产开平碉楼与村落的核心片区之一。村里现存十五座碉楼，大多建于上世纪二三十年代，是当年旅居海外的侨胞为了防匪患、保家园而修建的，集防卫、居住和中西建筑艺术于一体。其中最著名的是铭石楼，电影《让子弹飞》曾经在这里取景。漫步村中，碉楼、居庐与稻田、竹林相映成趣，可以感受到浓郁的侨乡风情。",
       "tags": ["世界文化遗产", "国家5A级景区"],
       "images": ["images/zilicun/1.jpg", "images/zilicun/2.jpg", "images/zilicun/3.jpg"],
+      "audio": {"en": "audio/en/zilicun.mp3"},
       "en": {
         "name": "Zili Village (Kaiping Diaolou and Villages)",
         "category": "World Cultural Heritage",
@@ -38,6 +39,7 @@
       "narrate": "赤坎古镇，位于广东省开平市赤坎镇、潭江河畔，开埠建墟已经有三百多年历史。古镇沿江保留着六百多座骑楼，南洋和欧陆风情交融，是全国规模最大、界面最连续、保存最完整的侨乡古骑楼建筑群之一。二十世纪初，镇上的关氏和司徒氏两大家族争相修建骑楼、学校和图书馆，著名的关族图书馆、司徒氏通俗图书馆都出自那个年代，也让赤坎有了万国建筑博物馆的美誉。如今这里已成为广东赤坎古镇侨乡国际旅游度假区，是了解华侨文化和侨批文化的好去处。",
       "tags": ["历史文化名镇", "华侨文化"],
       "images": ["images/chikan/1.jpg", "images/chikan/2.jpg", "images/chikan/3.jpg"],
+      "audio": {"en": "audio/en/chikan.mp3"},
       "en": {
         "name": "Chikan Ancient Town",
         "category": "Historic Town",
@@ -63,6 +65,7 @@
       "narrate": "梁启超故居，位于广东省江门市新会区茶坑村，建于清代光绪年间，是一座青砖土瓦的岭南民居，由故居、怡堂书室和回廊等建筑组成，建筑面积四百多平方米，现在是全国重点文物保护单位。梁启超是近代中国著名的思想家、政治家、教育家和文学家，曾经和康有为一起领导戊戌变法，还写下了《少年中国说》等名篇。这里是他出生和成长的地方，如今建有梁启超故居纪念馆，供人们缅怀这位近代启蒙先驱。",
       "tags": ["全国重点文物保护单位", "名人故居"],
       "images": ["images/liangqichao/1.jpg", "images/liangqichao/2.jpg", "images/liangqichao/3.jpg"],
+      "audio": {"en": "audio/en/liangqichao.mp3"},
       "en": {
         "name": "Former Residence of Liang Qichao",
         "category": "Historic Residence",
@@ -88,6 +91,7 @@
       "narrate": "开平立园，位于广东省开平市塘口镇赓华村，是旅美华侨谢维立先生从1926年到1936年，历时十年兴建的私家园林，占地约一万一千平方米。它把中国传统的园林和西洋建筑巧妙地融合在一起，被誉为中国华侨园林一绝。园主人谢维立早年赴美国谋生，事业有成之后回乡建园。园里有别墅区、花园区，泮立楼、泮文楼、乐天楼、毓培别墅等建筑，和亭台楼阁、小桥流水以及罗马柱、彩色玻璃这些西洋元素相互辉映，展现了华侨融汇中西的审美。如今立园是开平碉楼文化旅游区的重要组成部分，这个文化旅游区是国家5A级景区。",
       "tags": ["国家5A级景区", "华侨园林"],
       "images": ["images/liyuan/1.jpg", "images/liyuan/2.jpg", "images/liyuan/3.jpg", "images/liyuan/4.jpg"],
+      "audio": {"en": "audio/en/liyuan.mp3"},
       "en": {
         "name": "Li Garden (Kaiping Li Garden)",
         "category": "Overseas-Chinese Garden",

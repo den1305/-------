@@ -76,3 +76,8 @@ def build_narrate(spot: dict, lang: str = "zh") -> str:
     if view["open_info"]:
         text += f"开放时间：{view['open_info']}。"
     return text
+
+
+def build_audio(spot: dict) -> dict[str, str]:
+    """返回词典中预生成语音文件的静态地址（按语言，如 en），未提供则为空。"""
+    return {lang: "/static/" + path for lang, path in (spot.get("audio") or {}).items()}

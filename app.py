@@ -18,7 +18,7 @@ import threading
 
 from flask import Flask, Response, jsonify, render_template, request
 
-from core.content import build_narrate, build_view
+from core.content import build_audio, build_narrate, build_view
 from core.retriever import SpotRetriever
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -95,6 +95,7 @@ def api_intro():
                 "zh": build_narrate(spot, "zh"),
                 "en": build_narrate(spot, "en"),
             },
+            "audio": build_audio(spot),
         }
     )
 

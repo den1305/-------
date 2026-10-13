@@ -10,6 +10,7 @@ const audio = $("#r-audio");
 
 let audioUrl = null;   // 当前音频的 objectURL，便于释放
 let lastNarrate = { zh: "", en: "" };  // 最近一次查询的中/英朗读稿
+let lastAudio = { zh: "", en: "" };    // 预生成语音文件地址（有则优先使用，无需现场合成）
 let voiceLang = "zh";  // 当前朗读语言：zh / en
 
 function setHint(text, isError) {
@@ -43,6 +44,7 @@ async function ask(name) {
     renderResult(data);
     setHint("");
     lastNarrate = data.narrate || { zh: "", en: "" };
+    lastAudio = data.audio || { zh: "", en: "" };
     playNarration(lastNarrate[voiceLang], voiceLang);
   } catch (err) {
     setHint("请求失败：" + err.message, true);
@@ -56,6 +58,7 @@ function renderNotFound(name, data) {
   $("#zh-title").textContent = "中文介绍";
   $("#en-title").textContent = "English";
   lastNarrate = { zh: "", en: "" };
+  lastAudio = { zh: "", en: "" };
   stopAudio();
   renderGallery([]);
 
@@ -144,6 +147,16 @@ function escapeHtml(s) {
 async function playNarration(text, lang = "en") {
   if (!text) return;
   stopAudio();
+
+  // 词典提供预生成语音文件时直接播放，省去现场合成
+  const preset = lastAudio[lang];
+  if (preset) {
+    audio.src = preset;
+    setHint("");
+    await audio.play().catch(() => {});
+    return;
+  }
+
   setHint("语音合成中…");
   try {
     const resp = await fetch("/api/tts", {
