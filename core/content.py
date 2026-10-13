@@ -6,6 +6,11 @@
 from __future__ import annotations
 
 
+def _image_urls(spot: dict) -> list[str]:
+    """把词典中的相对路径转成前端可直接使用的静态资源地址（中英文共用）。"""
+    return ["/static/" + p for p in spot.get("images", [])]
+
+
 def build_view(spot: dict, lang: str = "zh") -> dict:
     """生成前端展示用的结构化内容（lang: zh / en）。"""
     if lang == "en":
@@ -19,6 +24,7 @@ def build_view(spot: dict, lang: str = "zh") -> dict:
             "history": en.get("history", ""),
             "highlights": en.get("highlights", []),
             "open_info": en.get("open_info", ""),
+            "images": _image_urls(spot),
         }
 
     return {
@@ -30,6 +36,7 @@ def build_view(spot: dict, lang: str = "zh") -> dict:
         "history": spot.get("history", ""),
         "highlights": spot.get("highlights", []),
         "open_info": spot.get("open_info", ""),
+        "images": _image_urls(spot),
     }
 
 

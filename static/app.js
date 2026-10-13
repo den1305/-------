@@ -57,6 +57,7 @@ function renderNotFound(name, data) {
   $("#en-title").textContent = "English";
   lastNarrate = { zh: "", en: "" };
   stopAudio();
+  renderGallery([]);
 
   const suggestions = data.suggestions || [];
   const zhMsg = suggestions.length
@@ -87,10 +88,33 @@ function renderResult(data) {
 
   fillLang("zh", zh);
   fillLang("en", en);
+  renderGallery(zh.images, zh.name);
 
   if (data.match === "fuzzy" || data.match === "pinyin") {
     setHint("按相近名称匹配到「" + zh.name + "」");
   }
+}
+
+/* 渲染实景图片；没有图片时隐藏整个图片区。 */
+function renderGallery(urls, alt) {
+  const wrap = $("#gallery-wrap");
+  const box = $("#gallery");
+  const list = urls || [];
+  box.innerHTML = "";
+  wrap.hidden = list.length === 0;
+  list.forEach((u) => {
+    const link = document.createElement("a");
+    link.className = "gallery-item";
+    link.href = u;
+    link.target = "_blank";
+    link.rel = "noopener";
+    const img = document.createElement("img");
+    img.src = u;
+    img.loading = "lazy";
+    img.alt = (alt ? alt + " " : "") + "实景图片";
+    link.appendChild(img);
+    box.appendChild(link);
+  });
 }
 
 /* 填充某一语言分栏（prefix: zh / en），placeholder 为缺失字段的占位符。 */
