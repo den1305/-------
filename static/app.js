@@ -9,6 +9,7 @@ const result = $("#result");
 const audio = $("#r-audio");
 
 let audioUrl = null;   // 当前音频的 objectURL，便于释放
+let lastNarrate = { zh: "", en: "" };  // 最近一次查询的中/英朗读稿
 
 function setHint(text, isError) {
   hint.textContent = text || "";
@@ -40,7 +41,8 @@ async function ask(name) {
     }
     renderResult(data);
     setHint("");
-    playNarration(data.narrate);
+    lastNarrate = data.narrate || { zh: "", en: "" };
+    playNarration(lastNarrate.en, "en");
   } catch (err) {
     setHint("请求失败：" + err.message, true);
   }
@@ -50,43 +52,59 @@ function renderNotFound(name, data) {
   result.hidden = false;
   $("#r-name").textContent = "未收录：" + name;
   $("#r-meta").innerHTML = "";
-  const suggest = (data.suggestions || []).join("、");
-  $("#r-intro").textContent = suggest
-    ? "本地词典中暂无该景点。你可能想找：" + suggest
-    : "本地词典中暂无该景点，可在 data/spots.json 中补充。";
-  $("#r-history").textContent = "";
-  $("#r-highlights").innerHTML = "";
-  $("#r-open").textContent = "";
+  $("#zh-title").textContent = "中文介绍";
+  $("#en-title").textContent = "English";
   stopAudio();
+
+  const suggestions = data.suggestions || [];
+  const zhMsg = suggestions.length
+    ? "本地词典中暂无该景点。你可能想找：" + suggestions.join("、")
+    : "本地词典中暂无该景点，可在 data/spots.json 中补充。";
+  const enMsg = suggestions.length
+    ? "Not found in the local dictionary. Did you mean: " + suggestions.join(", ") + "?"
+    : "Not found in the local dictionary. You can add it in data/spots.json.";
+
+  fillLang("zh", { intro: zhMsg }, "");
+  fillLang("en", { intro: enMsg }, "");
   setHint(data.error || "未收录该景点", true);
 }
 
 function renderResult(data) {
-  const view = data.view;
+  const zh = data.zh || {};
+  const en = data.en || {};
   result.hidden = false;
-  $("#r-name").textContent = view.name;
+  $("#r-name").textContent = zh.name;
+  $("#zh-title").textContent = "中文介绍";
+  $("#en-title").textContent = "English · " + (en.name || "");
 
   const chips = [];
-  if (view.category) chips.push(view.category);
-  if (view.location) chips.push(view.location);
-  (view.tags || []).forEach((t) => chips.push(t));
+  if (zh.category) chips.push(zh.category);
+  if (zh.location) chips.push(zh.location);
+  (zh.tags || []).forEach((t) => chips.push(t));
   $("#r-meta").innerHTML = chips.map((c) => `<span class="chip">${escapeHtml(c)}</span>`).join("");
 
-  $("#r-intro").textContent = view.intro || "—";
-  $("#r-history").textContent = view.history || "—";
-  $("#r-open").textContent = view.open_info || "—";
+  fillLang("zh", zh);
+  fillLang("en", en);
 
-  const list = $("#r-highlights");
+  if (data.match === "fuzzy" || data.match === "pinyin") {
+    setHint("按相近名称匹配到「" + zh.name + "」");
+  }
+}
+
+/* 填充某一语言分栏（prefix: zh / en），placeholder 为缺失字段的占位符。 */
+function fillLang(prefix, view, placeholder = "—") {
+  const v = view || {};
+  $("#" + prefix + "-intro").textContent = v.intro || placeholder;
+  $("#" + prefix + "-history").textContent = v.history || placeholder;
+  $("#" + prefix + "-open").textContent = v.open_info || placeholder;
+
+  const list = $("#" + prefix + "-highlights");
   list.innerHTML = "";
-  (view.highlights || []).forEach((h) => {
+  (v.highlights || []).forEach((h) => {
     const li = document.createElement("li");
     li.textContent = h;
     list.appendChild(li);
   });
-
-  if (data.match === "fuzzy" || data.match === "pinyin") {
-    setHint("按相近名称匹配到「" + view.name + "」");
-  }
 }
 
 function escapeHtml(s) {
@@ -97,7 +115,7 @@ function escapeHtml(s) {
 
 /* ---------------- 语音合成播放 ---------------- */
 
-async function playNarration(text) {
+async function playNarration(text, lang = "en") {
   if (!text) return;
   stopAudio();
   setHint("语音合成中…");
@@ -105,7 +123,7 @@ async function playNarration(text) {
     const resp = await fetch("/api/tts", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text }),
+      body: JSON.stringify({ text, lang }),
     });
     if (!resp.ok) {
       const err = await resp.json().catch(() => ({}));
@@ -263,8 +281,7 @@ queryInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter") ask();
 });
 $("#replay").addEventListener("click", () => {
-  const text = $("#r-intro").textContent;
-  playNarration(text && text !== "—" ? text : "");
+  playNarration(lastNarrate.en, "en");
 });
 
 micBtn.addEventListener("pointerdown", (e) => {

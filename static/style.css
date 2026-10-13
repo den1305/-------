@@ -138,10 +138,22 @@ body {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 18px 26px;
-  margin-top: 20px;
+  margin-top: 14px;
 }
 
-.block h3 {
+/* 语言分栏（中文 / English） */
+.lang-block { margin-top: 26px; }
+
+.lang-title {
+  margin: 0;
+  padding-left: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+  border-left: 3px solid var(--accent);
+}
+
+.block h4 {
   margin: 0 0 6px;
   font-size: 15px;
   color: var(--accent-strong);

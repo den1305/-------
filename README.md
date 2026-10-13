@@ -1,13 +1,14 @@
 # 景点介绍 · 离线语音导游
 
-输入或说出景点名称，即可获得图文介绍与语音朗读。**全程离线**：检索、语音识别（ASR）、语音合成（TTS）均在本地完成，比赛现场无需联网、无需调用任何外部模型。
+输入或说出景点名称，即可获得**中英双语图文介绍 + 英文语音朗读**。**全程离线**：检索、语音识别（ASR）、语音合成（TTS）均在本地完成，比赛现场无需联网、无需调用任何外部模型。
 
 ## 功能
 
 - **文本输入**：输入框输入景点名称。
 - **按住说话**：浏览器录音 → 本地离线语音识别（Paraformer）→ 自动查询。
 - **本地词典检索**：精确名称 / 别名 → 拼音匹配 → 模糊匹配 → 未收录提示（含相近建议）。
-- **离线语音合成**：将介绍文本合成为语音并自动播放（VITS 中文模型，5 个音色）。
+- **中英双语回答**：同一次查询同时给出中文介绍与英文介绍（简介 / 历史沿革 / 主要看点 / 游览信息）。
+- **英文语音朗读**：将英文介绍合成为英文语音并自动播放（Piper 英文模型，可点击「重新朗读」重播）。
 
 ## 目录结构
 
@@ -16,8 +17,8 @@ app.py                  Flask 服务入口（本地网页后端）
 requirements.txt        Python 依赖
 core/
   retriever.py         本地词典检索（精确/别名/拼音/模糊）
-  content.py           词条 → 屏幕展示内容 + 口语朗读稿
-  tts.py               离线语音合成封装（sherpa-onnx VITS）
+  content.py           词条 → 中英文展示内容 + 朗读稿
+  tts.py               离线语音合成封装（VITS，中/英模型自动识别）
   asr.py               离线语音识别封装（sherpa-onnx Paraformer）
 data/
   spots.json           景点词典（**只需改这里即可换景点**）
@@ -25,8 +26,9 @@ templates/index.html   页面结构
 static/app.js          前端交互（查询、录音、播放）
 static/style.css       页面样式
 models/                离线模型（Git LFS 管理）
-  sherpa-onnx-vits-zh-ll/                     TTS 模型
-  sherpa-onnx-paraformer-zh-small-2024-03-09/ ASR 模型
+  sherpa-onnx-vits-zh-ll/                     TTS 中文模型（备用音色）
+  vits-piper-en_US-amy-medium/                TTS 英文模型（英文朗读）
+  sherpa-onnx-paraformer-zh-small-2024-03-09/ ASR 中文识别模型
 ```
 
 ## 环境要求
@@ -81,14 +83,15 @@ python app.py
 | ---- | ------------- | ---- |
 | GET  | `/`           | 首页 |
 | GET  | `/api/spots`  | 词典内全部景点名称 |
-| POST | `/api/intro`  | 入参 `{"name": "故宫"}`，返回展示内容与朗读稿 |
-| POST | `/api/tts`    | 入参 `{"text": "...", "speed": 1.0, "sid": 0}`，返回 WAV 音频 |
+| POST | `/api/intro`  | 入参 `{"name": "故宫"}`，返回中英文展示内容 `zh` / `en` 与朗读稿 `narrate.zh` / `narrate.en` |
+| POST | `/api/tts`    | 入参 `{"text": "...", "lang": "en", "speed": 1.0, "sid": 0}`，返回 WAV 音频（`lang` 取 `en` / `zh`） |
 | POST | `/api/asr`    | 请求体为 WAV 字节，返回 `{"text": "..."}` |
-| GET  | `/api/health` | 词典与模型状态 |
+| GET  | `/api/health` | 词典与各模型状态 |
 
 ## 替换景点（现场正式景点）
 
-编辑 `data/spots.json`，按下面的字段结构增删条目即可，无需改动任何代码：
+编辑 `data/spots.json`，按下面的字段结构增删条目即可，无需改动任何代码。
+条目的**顶层字段为中文内容**，另有一个可选字段 **`en`** 承载英文内容（结构相同）：
 
 | 字段         | 必填 | 说明 |
 | ------------ | ---- | ---- |
@@ -101,10 +104,12 @@ python app.py
 | `intro`      | 否   | 简介（屏幕展示） |
 | `history`    | 否   | 历史沿革（屏幕展示） |
 | `highlights` | 否   | 主要看点（数组，屏幕列表展示） |
-| `narrate`    | 否   | **语音朗读稿**；留空则用其他字段自动拼一段连贯话术 |
+| `narrate`    | 否   | **中文朗读稿**；留空则用其他字段自动拼一段连贯话术 |
 | `tags`       | 否   | 标签（数组），如「5A」「世界文化遗产」 |
+| `en`         | 否   | **英文内容对象**，含同名子字段 `name`/`category`/`location`/`open_info`/`intro`/`history`/`highlights`/`narrate`/`tags`；其中 `narrate` 为**英文朗读稿**，供英文语音朗读使用 |
 
-> 建议为每个景点撰写独立的 `narrate`：它比多个字段拼接更口语、更连贯，更适合朗读。
+> 建议为每个景点撰写独立的 `narrate`（中文）与 `en.narrate`（英文）：它们比多个字段拼接更口语、更连贯，更适合朗读。
+> `en` 缺失时英文分栏会显示占位符，英文语音也不会自动播放，因此正式景点请补齐 `en` 内容。
 
 ## Windows 免安装打包（PyInstaller）
 
@@ -122,7 +127,7 @@ pyinstaller --noconfirm --name ScenicGuide ^
 ```
 
 - 打包结果在 `dist/ScenicGuide/`，双击其中的 `ScenicGuide.exe` 即可运行（无需安装 Python）。
-- 由于内嵌了两个模型，成品体积约 200 MB 以上，属正常现象；`--noconfirm` 免交互、`--collect-all sherpa_onnx` 用于带上 sherpa-onnx 的动态库与资源。
+- 由于内嵌了中英 TTS 与 ASR 三个模型，成品体积约 250 MB 以上，属正常现象；`--noconfirm` 免交互、`--collect-all sherpa_onnx` 用于带上 sherpa-onnx 的动态库与资源。
 - macOS / Linux 打包时把 `--add-data` 的 `;` 换成 `:` 即可。
 
 ## 说明

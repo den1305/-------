@@ -1,10 +1,13 @@
-"""离线语音合成（TTS）封装，基于 sherpa-onnx 的 VITS 中文模型。
+"""离线语音合成（TTS）封装，基于 sherpa-onnx 的 VITS 模型。
 
-模型目录需包含：model.onnx、tokens.txt、lexicon.txt、dict/ 以及若干规则 fst。
+同一套逻辑支持两类模型目录，按目录内容自动识别：
+  - 中文 VITS（sherpa-onnx-vits-zh-ll）：model.onnx + lexicon.txt + tokens.txt + dict/
+  - 英文 Piper（vits-piper-en_US-*）：<voice>.onnx + tokens.txt + espeak-ng-data/
 """
 
 from __future__ import annotations
 
+import glob
 import io
 import os
 import wave
@@ -29,6 +32,23 @@ def samples_to_wav_bytes(samples: np.ndarray, sample_rate: int) -> bytes:
     return buf.getvalue()
 
 
+def _find_model_file(model_dir: str) -> str:
+    """定位 VITS 主模型：优先 model.onnx，否则取目录下第一个 *.onnx。"""
+    preferred = os.path.join(model_dir, "model.onnx")
+    if os.path.exists(preferred):
+        return preferred
+    candidates = sorted(glob.glob(os.path.join(model_dir, "*.onnx")))
+    if not candidates:
+        raise FileNotFoundError(f"未在 {model_dir} 找到 .onnx 模型文件")
+    return candidates[0]
+
+
+def _optional(model_dir: str, name: str) -> str:
+    """目录下存在该文件/文件夹则返回其路径，否则返回空串（sherpa-onnx 视空串为未提供）。"""
+    path = os.path.join(model_dir, name)
+    return path if os.path.exists(path) else ""
+
+
 class TtsEngine:
     """封装 OfflineTts 的懒加载引擎（进程内单例由调用方保证）。"""
 
@@ -39,10 +59,11 @@ class TtsEngine:
         self.default_speed = default_speed
 
         vits = sherpa_onnx.OfflineTtsVitsModelConfig(
-            model=os.path.join(model_dir, "model.onnx"),
-            lexicon=os.path.join(model_dir, "lexicon.txt"),
+            model=_find_model_file(model_dir),
+            lexicon=_optional(model_dir, "lexicon.txt"),
             tokens=os.path.join(model_dir, "tokens.txt"),
-            dict_dir=os.path.join(model_dir, "dict"),
+            data_dir=_optional(model_dir, "espeak-ng-data"),
+            dict_dir=_optional(model_dir, "dict"),
         )
         model_config = sherpa_onnx.OfflineTtsModelConfig(
             vits=vits,
