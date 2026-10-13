@@ -181,6 +181,32 @@ body {
 
 .player audio { flex: 1 1 260px; height: 38px; }
 
+/* 朗读语言切换 */
+.voice-switch {
+  display: inline-flex;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.voice-btn {
+  padding: 9px 14px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+
+.voice-btn + .voice-btn { border-left: 1px solid var(--line); }
+
+.voice-btn.is-active { background: var(--accent); color: #fff; }
+
+.voice-btn:hover:not(.is-active) { color: var(--accent-strong); }
+
 /* 未收录提示 */
 .notfound { padding: 4px 0 8px; }
 .notfound strong { color: var(--ink); }

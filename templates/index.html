@@ -76,7 +76,10 @@
       </div>
 
       <div class="player">
-        <span class="player-label">英文语音朗读</span>
+        <div class="voice-switch" id="voice-switch" role="group" aria-label="朗读语言">
+          <button type="button" class="voice-btn is-active" data-lang="zh">中文语音</button>
+          <button type="button" class="voice-btn" data-lang="en">英文语音</button>
+        </div>
         <audio id="r-audio" controls preload="auto"></audio>
         <button id="replay" class="btn ghost">重新朗读</button>
       </div>

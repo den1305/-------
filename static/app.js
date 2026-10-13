@@ -10,6 +10,7 @@ const audio = $("#r-audio");
 
 let audioUrl = null;   // 当前音频的 objectURL，便于释放
 let lastNarrate = { zh: "", en: "" };  // 最近一次查询的中/英朗读稿
+let voiceLang = "zh";  // 当前朗读语言：zh / en
 
 function setHint(text, isError) {
   hint.textContent = text || "";
@@ -42,7 +43,7 @@ async function ask(name) {
     renderResult(data);
     setHint("");
     lastNarrate = data.narrate || { zh: "", en: "" };
-    playNarration(lastNarrate.en, "en");
+    playNarration(lastNarrate[voiceLang], voiceLang);
   } catch (err) {
     setHint("请求失败：" + err.message, true);
   }
@@ -54,6 +55,7 @@ function renderNotFound(name, data) {
   $("#r-meta").innerHTML = "";
   $("#zh-title").textContent = "中文介绍";
   $("#en-title").textContent = "English";
+  lastNarrate = { zh: "", en: "" };
   stopAudio();
 
   const suggestions = data.suggestions || [];
@@ -281,7 +283,18 @@ queryInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter") ask();
 });
 $("#replay").addEventListener("click", () => {
-  playNarration(lastNarrate.en, "en");
+  playNarration(lastNarrate[voiceLang], voiceLang);
+});
+
+/* 朗读语言切换：切换后立即用新语言朗读当前景点 */
+$("#voice-switch").addEventListener("click", (e) => {
+  const btn = e.target.closest(".voice-btn");
+  if (!btn) return;
+  voiceLang = btn.dataset.lang;
+  document.querySelectorAll("#voice-switch .voice-btn").forEach((b) => {
+    b.classList.toggle("is-active", b === btn);
+  });
+  playNarration(lastNarrate[voiceLang], voiceLang);
 });
 
 micBtn.addEventListener("pointerdown", (e) => {
