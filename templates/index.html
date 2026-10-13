@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>景点介绍 · 离线语音导游</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="app">
+    <header class="app-header">
+      <h1>景点介绍 · 离线语音导游</h1>
+      <p class="subtitle">说名称或输入名称，即可获得图文介绍与语音朗读 · 全程离线</p>
+    </header>
+
+    <section class="search-bar">
+      <input id="query" type="text" list="spot-list" autocomplete="off"
+             placeholder="输入景点名称，例如：故宫">
+      <datalist id="spot-list">
+        {% for name in spots %}<option value="{{ name }}"></option>{% endfor %}
+      </datalist>
+      <button id="ask" class="btn primary">查询</button>
+      <button id="mic" class="btn mic" aria-label="按住说话">按住说话</button>
+    </section>
+
+    <p id="hint" class="hint"></p>
+
+    <section id="result" class="result" hidden>
+      <div class="result-head">
+        <h2 id="r-name"></h2>
+        <div id="r-meta" class="chips"></div>
+      </div>
+      <div class="grid">
+        <article class="block">
+          <h3>简介</h3>
+          <p id="r-intro"></p>
+        </article>
+        <article class="block">
+          <h3>历史沿革</h3>
+          <p id="r-history"></p>
+        </article>
+        <article class="block">
+          <h3>主要看点</h3>
+          <ul id="r-highlights"></ul>
+        </article>
+        <article class="block">
+          <h3>游览信息</h3>
+          <p id="r-open"></p>
+        </article>
+      </div>
+      <div class="player">
+        <span class="player-label">语音朗读</span>
+        <audio id="r-audio" controls preload="auto"></audio>
+        <button id="replay" class="btn ghost">重新朗读</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

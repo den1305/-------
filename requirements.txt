@@ -1,0 +1,6 @@
+# 运行环境：Python 3.9 - 3.12（sherpa-onnx 官方 wheel 覆盖范围）
+flask>=3.0
+sherpa-onnx>=1.10.0
+numpy>=1.24
+# 可选：安装后可启用拼音/同音匹配，提升口语输入命中率
+pypinyin>=0.51

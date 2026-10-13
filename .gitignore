@@ -2,6 +2,9 @@ node_modules/
 target/
 __pycache__/
 .env
+.venv/
 dist/
+build/
+*.spec
 *.log
 .DS_Store
