@@ -27,35 +27,16 @@
 
     <section id="result" class="result" hidden>
       <div class="result-head">
-        <h2 id="r-name"></h2>
+        <div class="head-main">
+          <h2 id="r-name"></h2>
+          <p id="r-sub" class="sub-name"></p>
+        </div>
         <div id="r-meta" class="chips"></div>
       </div>
 
       <div id="gallery-wrap" class="lang-block" hidden>
         <h3 class="lang-title">实景图片 · Photos</h3>
         <div id="gallery" class="gallery"></div>
-      </div>
-
-      <div class="lang-block">
-        <h3 class="lang-title" id="zh-title">中文介绍</h3>
-        <div class="grid">
-          <article class="block">
-            <h4>简介</h4>
-            <p id="zh-intro"></p>
-          </article>
-          <article class="block">
-            <h4>历史沿革</h4>
-            <p id="zh-history"></p>
-          </article>
-          <article class="block">
-            <h4>主要看点</h4>
-            <ul id="zh-highlights"></ul>
-          </article>
-          <article class="block">
-            <h4>游览信息</h4>
-            <p id="zh-open"></p>
-          </article>
-        </div>
       </div>
 
       <div class="lang-block">
@@ -80,10 +61,32 @@
         </div>
       </div>
 
+      <div class="lang-block">
+        <h3 class="lang-title" id="zh-title">中文介绍</h3>
+        <div class="grid">
+          <article class="block">
+            <h4>简介</h4>
+            <p id="zh-intro"></p>
+          </article>
+          <article class="block">
+            <h4>历史沿革</h4>
+            <p id="zh-history"></p>
+          </article>
+          <article class="block">
+            <h4>主要看点</h4>
+            <ul id="zh-highlights"></ul>
+          </article>
+          <article class="block">
+            <h4>游览信息</h4>
+            <p id="zh-open"></p>
+          </article>
+        </div>
+      </div>
+
       <div class="player">
         <div class="voice-switch" id="voice-switch" role="group" aria-label="朗读语言">
-          <button type="button" class="voice-btn is-active" data-lang="zh">中文语音</button>
-          <button type="button" class="voice-btn" data-lang="en">英文语音</button>
+          <button type="button" class="voice-btn is-active" data-lang="en">英文语音</button>
+          <button type="button" class="voice-btn" data-lang="zh">中文语音</button>
         </div>
         <audio id="r-audio" controls preload="auto"></audio>
         <button id="replay" class="btn ghost">重新朗读</button>

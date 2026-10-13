@@ -124,6 +124,14 @@ body {
   font-size: 24px;
 }
 
+.head-main { display: flex; flex-direction: column; gap: 2px; }
+
+.sub-name {
+  margin: 0;
+  font-size: 15px;
+  color: var(--ink-soft);
+}
+
 .chips { display: flex; gap: 8px; flex-wrap: wrap; }
 
 .chip {

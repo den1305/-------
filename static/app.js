@@ -11,7 +11,7 @@ const audio = $("#r-audio");
 let audioUrl = null;   // 当前音频的 objectURL，便于释放
 let lastNarrate = { zh: "", en: "" };  // 最近一次查询的中/英朗读稿
 let lastAudio = { zh: "", en: "" };    // 预生成语音文件地址（有则优先使用，无需现场合成）
-let voiceLang = "zh";  // 当前朗读语言：zh / en
+let voiceLang = "en";  // 当前朗读语言：zh / en（默认英文优先）
 
 function setHint(text, isError) {
   hint.textContent = text || "";
@@ -53,7 +53,8 @@ async function ask(name) {
 
 function renderNotFound(name, data) {
   result.hidden = false;
-  $("#r-name").textContent = "未收录：" + name;
+  $("#r-name").textContent = "Not found: " + name;
+  $("#r-sub").textContent = "未收录：" + name;
   $("#r-meta").innerHTML = "";
   $("#zh-title").textContent = "中文介绍";
   $("#en-title").textContent = "English";
@@ -79,19 +80,22 @@ function renderResult(data) {
   const zh = data.zh || {};
   const en = data.en || {};
   result.hidden = false;
-  $("#r-name").textContent = zh.name;
-  $("#zh-title").textContent = "中文介绍";
-  $("#en-title").textContent = "English · " + (en.name || "");
+  // 英文优先：主标题为英文名，中文名作为副标题
+  $("#r-name").textContent = en.name || zh.name;
+  $("#r-sub").textContent = zh.name && en.name ? zh.name : "";
+  $("#en-title").textContent = "English";
+  $("#zh-title").textContent = "中文介绍 · " + (zh.name || "");
 
   const chips = [];
-  if (zh.category) chips.push(zh.category);
-  if (zh.location) chips.push(zh.location);
-  (zh.tags || []).forEach((t) => chips.push(t));
-  $("#r-meta").innerHTML = chips.map((c) => `<span class="chip">${escapeHtml(c)}</span>`).join("");
+  if (en.category) chips.push(en.category);
+  if (en.location) chips.push(en.location);
+  (en.tags || []).forEach((t) => chips.push(t));
+  const unique = [...new Set(chips)];  // 去重：category 有时也出现在 tags 里
+  $("#r-meta").innerHTML = unique.map((c) => `<span class="chip">${escapeHtml(c)}</span>`).join("");
 
-  fillLang("zh", zh);
   fillLang("en", en);
-  renderGallery(zh.images, zh.name);
+  fillLang("zh", zh);
+  renderGallery(en.images || zh.images, en.name || zh.name);
 
   if (data.match === "fuzzy" || data.match === "pinyin") {
     setHint("按相近名称匹配到「" + zh.name + "」");
