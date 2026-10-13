@@ -29,6 +29,12 @@ TTS_MODEL_DIRS = {
     "zh": os.path.join(MODELS_DIR, "sherpa-onnx-vits-zh-ll"),
     "en": os.path.join(MODELS_DIR, "vits-piper-en_US-amy-medium"),
 }
+
+# 各语言默认音色与语速：中文改用模型内置的中低男声（sid=3），语速 0.95 更稳重，适合正式播报
+TTS_DEFAULTS = {
+    "zh": {"sid": 3, "speed": 0.95},
+    "en": {"sid": 0, "speed": 1.0},
+}
 ASR_MODEL_DIR = os.path.join(MODELS_DIR, "sherpa-onnx-paraformer-zh-small-2024-03-09")
 
 app = Flask(__name__)
@@ -49,7 +55,11 @@ def get_tts(lang: str = "zh"):
             if lang not in _tts_engines:
                 from core.tts import TtsEngine
 
-                _tts_engines[lang] = TtsEngine(TTS_MODEL_DIRS[lang])
+                _tts_engines[lang] = TtsEngine(
+                    TTS_MODEL_DIRS[lang],
+                    default_sid=TTS_DEFAULTS[lang]["sid"],
+                    default_speed=TTS_DEFAULTS[lang]["speed"],
+                )
     return _tts_engines[lang]
 
 
@@ -112,14 +122,15 @@ def api_tts():
     if lang not in TTS_MODEL_DIRS:
         return jsonify({"error": f"不支持的语音语言：{lang}"}), 400
 
+    defaults = TTS_DEFAULTS[lang]
     try:
-        speed = float(payload.get("speed", 1.0))
+        speed = float(payload["speed"]) if "speed" in payload else defaults["speed"]
     except (TypeError, ValueError):
-        speed = 1.0
+        speed = defaults["speed"]
     try:
-        sid = int(payload.get("sid", 0))
+        sid = int(payload["sid"]) if "sid" in payload else defaults["sid"]
     except (TypeError, ValueError):
-        sid = 0
+        sid = defaults["sid"]
 
     try:
         wav = get_tts(lang).synthesize_wav_bytes(text, sid=sid, speed=speed)
