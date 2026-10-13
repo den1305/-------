@@ -18,6 +18,10 @@
 ```
 app.py                  Flask 服务入口（本地网页后端）
 requirements.txt        Python 依赖
+install.bat / install.sh   一键安装：检测 Python + 离线安装依赖
+start.bat   / start.sh     一键启动：启动服务并打开页面
+wheels/                    离线依赖包（win_amd64 / linux_x86_64）
+installer/                 离线 Python 安装包（Windows）
 core/
   retriever.py         本地词典检索（精确/别名/拼音/模糊）
   content.py           词条 → 中英文展示内容 + 朗读稿
@@ -42,7 +46,20 @@ models/                离线模型（Git LFS 管理）
 - **Python 3.10 – 3.12**（sherpa-onnx 官方 wheel 的覆盖范围，请勿使用 3.13/3.14）。
 - Windows / macOS / Linux 均可运行；现场演示建议用 Windows。
 
-## 快速开始
+## 快速开始（一键）
+
+**Windows**：双击 `install.bat` → 双击 `start.bat`（浏览器会自动打开 `http://127.0.0.1:5000`）。
+
+**macOS / Linux**：
+
+```bash
+./install.sh
+./start.sh
+```
+
+安装脚本会自动完成：检测 Python（3.10 – 3.12）→ 创建 `.venv` → 从本地 `wheels/` **离线**安装依赖。Windows 下若检测不到 Python，会尝试用 `installer/python-3.12.10-amd64.exe` 静默安装。
+
+### 手动安装（等价）
 
 ```bash
 # 1. 创建虚拟环境
@@ -63,6 +80,12 @@ python app.py
 ```
 
 > 首次查询某个景点时会懒加载对应模型（约数秒），之后即秒级响应。
+
+### 离线运行说明
+
+- **依赖**：`wheels/` 已内置全部依赖包（Windows 用 `win_amd64/`，Linux 用 `linux_x86_64/`），安装时走 `pip install --no-index --find-links=…`，**全程无需联网**；仅当没有匹配本机平台的 `wheels/` 时才回退联网安装。
+- **Python**：Windows 可用 `installer/` 里的安装包离线安装；macOS / Linux 建议用系统包管理器安装 3.12。
+- **运行期**：检索、图片、音频、语音识别（ASR）、语音合成（TTS）全部在本地完成，**比赛现场断网也能正常运行**。
 
 ### 关于模型文件（Git LFS）
 
